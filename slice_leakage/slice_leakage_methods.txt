@@ -1,0 +1,13 @@
+1. Find peak locations for testing. Load SPM.mat (/derivatives/GLM/second/con/factorial/SPM.mat). Select contrast MEMB. Note down top 5 peaks. These are recorded in peaks.txt.
+2. Draw small peak ROIs on MNI brain. These have volume - all we really care about is the central location, but they need to be transformed and a single point tends to get lost in transformation. Open MNI atlas (/scripts/MNI152NLin2009cAsym/tpl-MNI152NLin2009cAsym_space-MNI_res-01_T1w_brain.nii) and navigate to each peak location. Draw a VOI with the following parameters: difference from origin = 255, difference at edge = 255, radius 3. Save file as VOI. Open it again and save it as .nii.gz. Store in /scripts/slice_leakage .
+3. Transform these ROIs into each participant's native space - run the script slice_leakage_apply_transforms.sh . 
+4. Find the peak coordinates in native space. Run the following commands in MATLAB:
+addpath('/group/mlr-lab/AH/Projects/spm12/')
+vol = spm_vol('peak1.nii.gz');
+q = spm_read_vols(vol);
+[x,y,z]=ind2sub(size(q),find(q==1))
+Then notate the coordinates of the central coordinate out of the coordinates returned. If there is no obvious choice, just pick one - all will be included in the final sphere for slice leakage testing, so it does not matter too much. Repeat for all peaks for all particpants. Store in scripts/slice_leakage/slice_leakage_coordinates.xlsx .
+5. Save these peak coordinates as a .mat file. Make an empty double, then copy and paste the coordinates of peak 1 for all participants into that variable. Save in /scripts/slice_leakage/voxel1.mat . Repeat for the other peaks.
+6. Create ROIs around each peak in native space and around possible artefact locations - run the script MC_sliceLeakage_find_masks_all.m .
+7. Extract contrast values from those ROIs, both for univariate comparisons and for exploratory MVPA - run the script MC_sliceLeakage_extract_ROIs_all.m .
+8. Plot results and test for differences between each multiband sequence and the corresponding single-band sequence at peak and possible artefact ROIs - run the script slice_leakage_statistics.m .
