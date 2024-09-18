@@ -29,14 +29,22 @@ for k=1:size(cond,2)
             ['sub-',subs{i}]
             
             % load native-space contrast images for sequence of interest
-            % and control (i.e. the corresponding single-band sequence)
             seq_filename = [proj_dir,'/derivatives/GLM/first_native/sub-',subs{i},'/',cond{k},'/con_0003.nii'];
+            % load single-band_control sequence
             con_filename = [proj_dir,'derivatives/GLM/first_native/sub-',subs{i},'/',cond{k}(1:2),'SB/con_0003.nii'];
+            % load single-echo control sequence. For SEMB, which is already
+            % single-echo, this is just the sequence of interest (and so
+            % the variable is not saved or used, but saves me a lot of "if"
+            % statements. For MEMB, this is SEMB.
+            congrap_filename = [proj_dir,'derivatives/GLM/first_native/sub-',subs{i},'/SE',cond{k}(3:4),'/con_0003.nii'];
+            
 
             nii = load_untouch_nii(seq_filename);
             D_seq=nii.img; % get image
             nii = load_untouch_nii(con_filename);
             D_con=nii.img; % get image
+            nii = load_untouch_nii(congrap_filename);
+            D_congrap=nii.img; % get image
 
             %load seed+artefact ROIs
             artefact_filename = [proj_dir,'derivatives/slice_leakage/sub-',subs{i},'/sub-',subs{i},'_',cond{k},'_seed_',num2str(seed.voxel(i,1)),'__',num2str(seed.voxel(i,2)),'__',num2str(seed.voxel(i,3)),'_sphere4_artefact_mask_conv.nii'];
@@ -53,6 +61,7 @@ for k=1:size(cond,2)
                 % nans.
                 mean_seq(i,a)=nanmean(D_seq(ROI_art==a));
                 mean_con(i,a)=nanmean(D_con(ROI_art==a));
+                mean_congrap(i,a)=nanmean(D_congrap(ROI_art==a));
             end
         end
         
@@ -62,7 +71,12 @@ for k=1:size(cond,2)
         save_filename = [proj_dir,'/derivatives/slice_leakage/',cond{k}(1:2),'SB_con_mean_voxel',num2str(j),'.mat'];
         save(save_filename,'mean_con');
 
-        clear mean_seq mean_con 
+        if k==2
+            save_filename = [proj_dir,'/derivatives/slice_leakage/SE',cond{k}(3:4),'_con_mean_voxel',num2str(j),'.mat'];
+            save(save_filename,'mean_congrap');
+        end
+
+        clear mean_seq mean_con mean_congrap
     end
 end
 
@@ -117,7 +131,17 @@ for k=1:size(cond,2)
                     mvpa_data_con(a,i).data(h,:) = D_con(ROI_art==a)';
                 end
             end
-
+            for h = 1:24
+                % load native-space contrast images for control sequence
+                congrap_filename = [proj_dir,'/derivatives/GLM/first_native_mvpa/sub-',subs{i},'/SE',cond{k}(3:4),'/',sprintf('beta_%04d.nii',h)];
+                nii = load_untouch_nii(congrap_filename);
+                D_congrap=nii.img; 
+                
+                % extract beta values for every block
+                for a=1:num_art
+                    mvpa_data_congrap(a,i).data(h,:) = D_congrap(ROI_art==a)';
+                end
+            end
         end
         
         save_filename = [proj_dir,'/derivatives/slice_leakage/',cond{k},'_seq_mvpa_voxel',num2str(j),'.mat'];
@@ -125,7 +149,12 @@ for k=1:size(cond,2)
         
         save_filename = [proj_dir,'/derivatives/slice_leakage/',cond{k}(1:2),'SB_con_mvpa_voxel',num2str(j),'.mat'];
         save(save_filename,'mvpa_data_con');
+        
+        if k ==2
+            save_filename = [proj_dir,'/derivatives/slice_leakage/SE',cond{k}(3:4),'_con_mvpa_voxel',num2str(j),'.mat'];
+            save(save_filename,'mvpa_data_congrap');
+        end
 
-        clear mvpa_data_seq mvpa_data_con
+        clear mvpa_data_seq mvpa_data_con mvpa_data_congrap
     end
 end
