@@ -337,6 +337,36 @@ ax6 = subplot(2,4,6);
 ax7 = subplot(2,4,7);
 linkaxes([ax1,ax2,ax3,ax4,ax5,ax6,ax7],'y')
 
+% statistics - anova 
+for i=1:length(con.ROIfiles)
+
+    % get data from that ROI and make it into a table
+    tmp=con_collate_median{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Echo', 'Band'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMB-SESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_con{i}=ranova(rm, 'withinmodel', 'Echo*Band');
+    % get p-values
+    anova_con_p(:,i) = [anova_con{i}.pValue(1,1),anova_con{i}.pValue(3,1),anova_con{i}.pValue(5,1),anova_con{i}.pValue(7,1)];
+
+    % get data from that ROI and make it into a table
+    tmp=spmT_collate_median{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Echo', 'Band'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMB-SESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_spmT{i}=ranova(rm, 'withinmodel', 'Echo*Band');
+    % get p-values
+    anova_spmT_p(:,i) = [anova_spmT{i}.pValue(1,1),anova_spmT{i}.pValue(3,1),anova_spmT{i}.pValue(5,1),anova_spmT{i}.pValue(7,1)];
+
+end
+
+
 % statistics - post-hoc t-tests
 
 for n=1:length(R.ROIfiles)
@@ -360,15 +390,14 @@ for n=1:length(R.ROIfiles)
     spmT_p_val(2,n)=tmp2;
     spmT_t_val(2,n)=tmp4.tstat;
     
-    % MEMB > MESB;
-    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,4)],'tail','left');
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,4)],'tail','left');
     con_p_val(3,n)=tmp2;
     con_t_val(3,n)=tmp4.tstat;
-    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,4)],'tail','left');
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,4)],'tail','left');
     spmT_p_val(3,n)=tmp2;
     spmT_t_val(3,n)=tmp4.tstat;
-
-    
+ 
 end
 
 %% Effect of denoising
@@ -530,6 +559,36 @@ ax6 = subplot(2,4,6);
 ax7 = subplot(2,4,7);
 linkaxes([ax1,ax2,ax3,ax4,ax5,ax6,ax7],'y')
 
+% statistics - anova 
+for i=1:length(con.ROIfiles)
+
+    % get data from that ROI and make it into a table
+    tmp=con_collate_median{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Band','denoisedEcho'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMBdn-MESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_con{i}=ranova(rm, 'withinmodel', 'Band*denoisedEcho');
+    % get p-values
+    anova_con_p(:,i) = [anova_con{i}.pValue(1,1),anova_con{i}.pValue(3,1),anova_con{i}.pValue(5,1),anova_con{i}.pValue(7,1)];
+
+    % get data from that ROI and make it into a table
+    tmp=spmT_collate_median{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Band','denoisedEcho'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMBdn-MESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_spmT{i}=ranova(rm, 'withinmodel', 'Band*denoisedEcho');
+    % get p-values
+    anova_spmT_p(:,i) = [anova_spmT{i}.pValue(1,1),anova_spmT{i}.pValue(3,1),anova_spmT{i}.pValue(5,1),anova_spmT{i}.pValue(7,1)];
+
+end
+
+
 % statistics - post-hoc t-tests
 
 for n=1:length(R.ROIfiles)
@@ -549,6 +608,14 @@ for n=1:length(R.ROIfiles)
     [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,4)],'tail','left');
     spmT_p_val(2,n)=tmp2;
     spmT_t_val(2,n)=tmp4.tstat;
+
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,4)],'tail','left');
+    con_p_val(3,n)=tmp2;
+    con_t_val(3,n)=tmp4.tstat;
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,4)],'tail','left');
+    spmT_p_val(3,n)=tmp2;
+    spmT_t_val(3,n)=tmp4.tstat;
     
 end
 
@@ -706,6 +773,35 @@ ax5 = subplot(2,3,5);
 ax6 = subplot(2,3,6);
 linkaxes([ax1,ax2,ax3,ax4,ax5,ax6],'y')
 
+% statistics - anova 
+for i=1:length(con.ROIfiles)
+
+    % get data from that ROI and make it into a table
+    tmp=con_collate_median{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Echo','oddBand'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMBodd-SESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_con{i}=ranova(rm, 'withinmodel', 'Echo*oddBand');
+    % get p-values
+    anova_con_p(:,i) = [anova_con{i}.pValue(1,1),anova_con{i}.pValue(3,1),anova_con{i}.pValue(5,1),anova_con{i}.pValue(7,1)];
+
+    % get data from that ROI and make it into a table
+    tmp=spmT_collate_median{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Echo','oddBand'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMBodd-SESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_spmT{i}=ranova(rm, 'withinmodel', 'Echo*oddBand');
+    % get p-values
+    anova_spmT_p(:,i) = [anova_spmT{i}.pValue(1,1),anova_spmT{i}.pValue(3,1),anova_spmT{i}.pValue(5,1),anova_spmT{i}.pValue(7,1)];
+
+end
+
 % statistics - post-hoc t-tests
 
 for n=1:length(R.ROIfiles)
@@ -725,7 +821,15 @@ for n=1:length(R.ROIfiles)
     [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,4)],'tail','left');
     spmT_p_val(2,n)=tmp2;
     spmT_t_val(2,n)=tmp4.tstat;
-    
+
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,4)],'tail','left');
+    con_p_val(3,n)=tmp2;
+    con_t_val(3,n)=tmp4.tstat;
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,4)],'tail','left');
+    spmT_p_val(3,n)=tmp2;
+    spmT_t_val(3,n)=tmp4.tstat;
+ 
 end
 
 %% Exploratory MVPA
@@ -1056,6 +1160,24 @@ ax6 = subplot(2,4,6);
 ax7 = subplot(2,4,7);
 linkaxes([ax1,ax2,ax3,ax4,ax5,ax6,ax7],'y')
 
+% statistics - anova
+
+for i=1:7
+
+    % get data from that ROI and make it into a table
+    tmp=con_mvpa_collate_mean{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Echo', 'Band'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMB-SESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_mvpa{i}=ranova(rm, 'withinmodel', 'Echo*Band');
+    % get p-values
+    anova_mvpa_p(:,i) = [anova_mvpa{i}.pValue(1,1),anova_mvpa{i}.pValue(3,1),anova_mvpa{i}.pValue(5,1),anova_mvpa{i}.pValue(7,1)];
+
+end
+
 % statistics - post-hoc t-tests
 
 for n=1:length(R.ROIfiles)
@@ -1071,9 +1193,9 @@ for n=1:length(R.ROIfiles)
     [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
     con_mvpa_p_val(2,n)=tmp2;
     con_mvpa_t_val(2,n)=tmp4.tstat;
-    
-    % MEMB > MESB;
-    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
+
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
     con_mvpa_p_val(3,n)=tmp2;
     con_mvpa_t_val(3,n)=tmp4.tstat;
 
@@ -1238,6 +1360,27 @@ ax6 = subplot(2,4,6);
 ax7 = subplot(2,4,7);
 linkaxes([ax1,ax2,ax3,ax4,ax5,ax6,ax7],'y')
 
+% statistics - anova
+
+for i=1:7
+
+    % get data from that ROI and make it into a table
+    tmp=con_mvpa_collate_mean{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Band','denoisedEcho'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMBdn-MESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_mvpa{i}=ranova(rm, 'withinmodel', 'Band*denoisedEcho');
+    % get p-values
+    anova_mvpa_p(:,i) = [anova_mvpa{i}.pValue(1,1),anova_mvpa{i}.pValue(3,1),anova_mvpa{i}.pValue(5,1),anova_mvpa{i}.pValue(7,1)];
+
+end
+
+% statistics - post-hoc t-tests
+
+
 for n=1:length(R.ROIfiles)
     
     % standard > denoised
@@ -1249,6 +1392,12 @@ for n=1:length(R.ROIfiles)
     [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
     con_mvpa_p_val(2,n)=tmp2;
     con_mvpa_t_val(2,n)=tmp4.tstat;
+
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
+    con_mvpa_p_val(3,n)=tmp2;
+    con_mvpa_t_val(3,n)=tmp4.tstat;
+
     
 end
 
@@ -1408,9 +1557,27 @@ ax5 = subplot(2,3,5);
 ax6 = subplot(2,3,6);
 linkaxes([ax1,ax2,ax3,ax4,ax5,ax6],'y')
 
+clear anova_mvpa anova_mvpa_p
+% statistics - anova
+for i=1:6
+
+    % get data from that ROI and make it into a table
+    tmp=con_mvpa_collate_mean{1,i};
+    tmp=array2table(tmp,'VariableNames',cond);
+    % setup
+    w = table(categorical([1 1 2 2].'), categorical([1 2 1 2].'), 'VariableNames', {'Echo','oddBand'});
+    % fit repeated measures model
+    rm = fitrm(tmp, 'MEMBodd-SESB ~ 1', 'WithinDesign', w);
+    % run anova
+    anova_mvpa{i}=ranova(rm, 'withinmodel', 'Echo*oddBand');
+    % get p-values
+    anova_mvpa_p(:,i) = [anova_mvpa{i}.pValue(1,1),anova_mvpa{i}.pValue(3,1),anova_mvpa{i}.pValue(5,1),anova_mvpa{i}.pValue(7,1)];
+
+end
+
 % statistics - post-hoc t-tests
 
-for n=1:length(R.ROIfiles)
+for n=1:6
     
     % SB > MBodd
     [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,3)],'tail','left');
@@ -1421,5 +1588,10 @@ for n=1:length(R.ROIfiles)
     [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
     con_mvpa_p_val(2,n)=tmp2;
     con_mvpa_t_val(2,n)=tmp4.tstat;
+
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
+    con_mvpa_p_val(3,n)=tmp2;
+    con_mvpa_t_val(3,n)=tmp4.tstat;
     
 end
