@@ -381,22 +381,39 @@ for n=1:length(R.ROIfiles)
     [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,2)],[spmT_collate_median{1,n}(:,3);spmT_collate_median{1,n}(:,4)],'tail','left');
     spmT_p_val(1,n)=tmp2;
     spmT_t_val(1,n)=tmp4.tstat;
-      
-    % MB > SB
-    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,4)],'tail','left');
+
+    % SE > ME
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,3);con_collate_median{1,n}(:,4)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,2)],'tail','left');
     con_p_val(2,n)=tmp2;
     con_t_val(2,n)=tmp4.tstat;
-    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,4)],'tail','left');
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,3);spmT_collate_median{1,n}(:,4)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,2)],'tail','left');
     spmT_p_val(2,n)=tmp2;
     spmT_t_val(2,n)=tmp4.tstat;
     
-    % Interaction
-    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,4)],'tail','left');
+      
+    % MB > SB
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,4)],'tail','left');
     con_p_val(3,n)=tmp2;
     con_t_val(3,n)=tmp4.tstat;
-    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,4)],'tail','left');
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,4)],'tail','left');
     spmT_p_val(3,n)=tmp2;
     spmT_t_val(3,n)=tmp4.tstat;
+
+    % SB > MB
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,4)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,3)],'tail','left');
+    con_p_val(4,n)=tmp2;
+    con_t_val(4,n)=tmp4.tstat;
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,4)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,3)],'tail','left');
+    spmT_p_val(4,n)=tmp2;
+    spmT_t_val(4,n)=tmp4.tstat;
+    
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_collate_median{1,n}(:,2);con_collate_median{1,n}(:,3)],[con_collate_median{1,n}(:,1);con_collate_median{1,n}(:,4)],'tail','left');
+    con_p_val(5,n)=tmp2;
+    con_t_val(5,n)=tmp4.tstat;
+    [tmp1,tmp2,tmp3,tmp4]=ttest([spmT_collate_median{1,n}(:,2);spmT_collate_median{1,n}(:,3)],[spmT_collate_median{1,n}(:,1);spmT_collate_median{1,n}(:,4)],'tail','left');
+    spmT_p_val(5,n)=tmp2;
+    spmT_t_val(5,n)=tmp4.tstat;
  
 end
 
@@ -1189,15 +1206,25 @@ for n=1:length(R.ROIfiles)
     % also get t-values
     con_mvpa_t_val(1,n)=tmp4.tstat;
 
-    % MB > SB
-    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
+    % SE > ME
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,3);con_mvpa_collate_mean{1,n}(:,4)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,2)],'tail','left');
     con_mvpa_p_val(2,n)=tmp2;
     con_mvpa_t_val(2,n)=tmp4.tstat;
 
-    % Interaction
-    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
+    % MB > SB
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
     con_mvpa_p_val(3,n)=tmp2;
     con_mvpa_t_val(3,n)=tmp4.tstat;
+
+    % SB > MB
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,4)],[con_mvpa_collate_mean{1,n}(:,3);con_mvpa_collate_mean{1,n}(:,1)],'tail','left');
+    con_mvpa_p_val(4,n)=tmp2;
+    con_mvpa_t_val(4,n)=tmp4.tstat;
+
+    % Interaction
+    [tmp1,tmp2,tmp3,tmp4]=ttest([con_mvpa_collate_mean{1,n}(:,2);con_mvpa_collate_mean{1,n}(:,3)],[con_mvpa_collate_mean{1,n}(:,1);con_mvpa_collate_mean{1,n}(:,4)],'tail','left');
+    con_mvpa_p_val(5,n)=tmp2;
+    con_mvpa_t_val(5,n)=tmp4.tstat;
 
 end
 
