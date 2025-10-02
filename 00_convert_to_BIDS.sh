@@ -24,7 +24,7 @@ mkdir -p $work/sub-"$ids"/
 
 # The first time you do the analysis, you should run this line. "-c none" means that it does not carry out the conversion. This will output the tsv file dicominfo, which is found in /imaging/projects/cbu/wbic-p00567-7Tmultiecho/main/data/.heudiconv/001/info - ctrl+h to reveal hidden files on linux). Check these details against the heuristics_main.py script before running the next line. (It also produces its own heuristic.py script, which you can use as a template for the heuristics_main.py script should you need to remake or change it.)
 # CAREFUL - subsitute $1 for 001 or similar if not using sub_jobs. 
-heudiconv -d $PWD/DICOM/sub-{subject}/*/*/*/*.dcm -o $PWD/data/ -f convertall -s $1 -c none -b --overwrite
+# heudiconv -d $PWD/DICOM/sub-{subject}/*/*/*/*.dcm -o $PWD/data/ -f convertall -s $1 -c none -b --overwrite
 
 # this line does the actual BIDS conversion. Thereafter the script skull-strips the MP2RAGE. It does this using the first and second inversion sequences (which are usually auto-combined by the scanner to make the MP2RAGE but luckily the originals are provided too). 
 heudiconv -d $dirp/DICOM/sub-{subject}/*/*/*/*.dcm -o $dirp/data/ -f $dirp/scripts/heuristics_main.py -s "$ids" -c dcm2niix -b --overwrite
@@ -60,8 +60,10 @@ rm -rf $dirp/data/sub-"$ids"/fmap/*echo-2* $dirp/data/sub-"$ids"/fmap/*echo-3*
 
 # rename reverse phase files to be BIDS-compliant
 
-## for SE and ptx data 
-for s in SESB SEMB ptx8ms; do 
+# for SE and ptx data 
+# for s in SESB SEMB ptx8ms; do 
+# for comparing ernst angles
+for s in SESB SEMB SESBernst SEMBernst; do
 mv $dirp/data/sub-"$ids"/fmap/sub-"$ids"_task-semantic_acq-"$s"_dir-PA_run-01_epi.json $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-PA_run-01_epi.json
 mv $dirp/data/sub-"$ids"/fmap/sub-"$ids"_task-semantic_acq-"$s"_dir-PA_run-01_epi.nii.gz $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-PA_run-01_epi.nii.gz
 # get the first 5 volumes from the ordinary run and add those to the fmap folder (and the matching .json file)
@@ -70,12 +72,12 @@ cp $dirp/data/sub-"$ids"/func/sub-"$ids"_task-semantic_acq-"$s"_run-01_bold.json
 done
 
 ## for ME data
-for s in MESB MEMB; do
-mv $dirp/data/sub-"$ids"/fmap/sub-"$ids"_task-semantic_acq-"$s"_dir-PA_run-01_echo-1_epi.json $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-PA_run-01_epi.json
-mv $dirp/data/sub-"$ids"/fmap/sub-"$ids"_task-semantic_acq-"$s"_dir-PA_run-01_echo-1_epi.nii.gz $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-PA_run-01_epi.nii.gz
-fslselectvols -i $dirp/data/sub-"$ids"/func/sub-"$ids"_task-semantic_acq-"$s"_run-01_echo-1_bold.nii.gz -o $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-AP_run-01_epi.nii.gz --vols=0,1,2,3,4
-cp $dirp/data/sub-"$ids"/func/sub-"$ids"_task-semantic_acq-"$s"_run-01_echo-1_bold.json $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-AP_run-01_epi.json
-done
+#for s in MESB MEMB; do
+#mv $dirp/data/sub-"$ids"/fmap/sub-"$ids"_task-semantic_acq-"$s"_dir-PA_run-01_echo-1_epi.json $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-PA_run-01_epi.json
+#mv $dirp/data/sub-"$ids"/fmap/sub-"$ids"_task-semantic_acq-"$s"_dir-PA_run-01_echo-1_epi.nii.gz $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-PA_run-01_epi.nii.gz
+#fslselectvols -i $dirp/data/sub-"$ids"/func/sub-"$ids"_task-semantic_acq-"$s"_run-01_echo-1_bold.nii.gz -o $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-AP_run-01_epi.nii.gz --vols=0,1,2,3,4
+#cp $dirp/data/sub-"$ids"/func/sub-"$ids"_task-semantic_acq-"$s"_run-01_echo-1_bold.json $dirp/data/sub-"$ids"/fmap/sub-"$ids"_acq-"$s"_dir-AP_run-01_epi.json
+#done
 
 
 

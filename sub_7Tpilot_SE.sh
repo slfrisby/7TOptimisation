@@ -3,7 +3,7 @@ echo "
 ++++++++++++++++++++++++" 
 echo +* "Set up script run environment" 
 #adds appropriate tools and options - no need to change if you have access to /imaging/mlr_imaging as the tools are in the folder 'AH', which is accessible to all users
-export PATH=$PATH:/group/mlr-lab/AH/Projects/toolboxes/afni/v18.3.03
+export PATH=$PATH:/imaging/local/software/afni/v18.3.03
 export PATH=$PATH:/imaging/local/software/anaconda/latest/x86_64/bin/
 export PATH=$PATH:/group/mlr-lab/AH/Projects/toolboxes/apps/bin
 export PATH=/imaging/local/software/mrtrix/v3.0.3_v2/bin/:$PATH
@@ -19,6 +19,7 @@ export FSLDIR PATH
 export PATH=/imaging/local/software/centos7/ants/bin/ants/bin/:$PATH
 export ANTSPATH=/imaging/local/software/centos7/ants/bin/ants/bin/
 FSLOUTPUTTYPE=NIFTI_GZ
+export LD_LIBRARY_PATH=/imaging/local/software/afni/v18.3.03:$LD_LIBRARY_PATH
 
 #conda enviroment includes tedana toolkit and heudiconv toolkit
 #need to set up if not already done/visible on your space
@@ -44,7 +45,9 @@ fi
 
 
 #####RUN fMRI processing#####
-for data in SESB SEMB ptx8ms; do
+# for data in SESB SEMB ptx8ms; do
+# for comparing ernst angles
+for data in SESB SEMB SESBernst SEMBernst; do
 
 run=$dirp/data/sub-"$ids"/func/sub-"$ids"_task-semantic_acq-"$data"_run-01_bold.nii.gz
 
@@ -78,9 +81,9 @@ cat $workcond/"$filename"_motion.1D > $workcond/"$filename"_motion.txt
 
 #Setup files for TOPUP
 # construct merged file contains 5 volumes of AP phase encoding direction and 5 volumes of PA
-fslmerge -t $workcond/merged.nii.gz $dirp/data/sub-$ids/fmap/*"$data"*AP*.nii.gz $dirp/data/sub-$ids/fmap/*"$data"*PA*.nii.gz
+fslmerge -t $workcond/merged.nii.gz $dirp/data/sub-$ids/fmap/*"$data"_*AP*.nii.gz $dirp/data/sub-$ids/fmap/*"$data"_*PA*.nii.gz
 # setup acquisition parameter file. Get total readout time (time from centre of first echo to centre of last, in seconds)
-totalreadouttime=$(cat "$dirp"/data/sub-"$ids"/fmap/*"$data"*AP*.json | jq '.TotalReadoutTime')
+totalreadouttime=$(cat "$dirp"/data/sub-"$ids"/fmap/*"$data"_*AP*.json | jq '.TotalReadoutTime')
 # setup first 5 lines of acquisition parameter file. It doesn't matter which of AP and PA is labelled with 1 and -1 - all that matters is that they are orthogonal.
 x=(0,-1,0,$totalreadouttime)
 # copy this line 5 times and append to the file

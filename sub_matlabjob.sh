@@ -12,6 +12,8 @@ work=/imaging/projects/cbu/wbic-p00567-7Tmultiecho/main/work
 # runs 1st level GLMs for MVPA
 #matlab_r2019a -nodisplay -nodesktop -r "addpath('$dirp/scripts/');firstlevel_glm_mvpa('"$ids"',$sm);exit"
 # runs 1st level GLMs for slice leakage artifact testing
-matlab_r2019a -nodisplay -nodesktop -r "addpath('$dirp/scripts/');firstlevel_glm_native('"$ids"');exit"
+# matlab_r2019a -nodisplay -nodesktop -r "addpath('$dirp/scripts/');firstlevel_glm_native('"$ids"');exit"
+# runs 1st level GLMs for investigating the impact of the Ernst angle
+matlab_r2019a -nodisplay -nodesktop -r "addpath('$dirp/scripts/');firstlevel_glm_ernst('"$ids"',$sm);exit"
 
 

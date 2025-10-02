@@ -3,7 +3,7 @@ echo "
 ++++++++++++++++++++++++" 
 echo +* "Set up script run environment" 
 #adds appropriate tools and options - no need to change if you have access to /imaging/mlr_imaging as the tools are in the folder 'AH', which is accessible to all users
-export PATH=$PATH:/group/mlr-lab/AH/Projects/toolboxes/afni/v18.3.03
+export PATH=$PATH:/imaging/local/software/afni/v18.3.03
 export PATH=$PATH:/imaging/local/software/anaconda/latest/x86_64/bin/
 export PATH=$PATH:/group/mlr-lab/AH/Projects/toolboxes/apps/bin
 export PATH=/imaging/local/software/mrtrix/v3.0.3_v2/bin/:$PATH
@@ -19,6 +19,7 @@ export FSLDIR PATH
 export PATH=/imaging/local/software/centos7/ants/bin/ants/bin/:$PATH
 export ANTSPATH=/imaging/local/software/centos7/ants/bin/ants/bin/
 FSLOUTPUTTYPE=NIFTI_GZ
+export LD_LIBRARY_PATH=/imaging/local/software/afni/v18.3.03:$LD_LIBRARY_PATH
 
 #conda enviroment includes tedana toolkit and heudiconv toolkit
 #need to set up if not already done/visible on your space

@@ -18,6 +18,7 @@ export FSLDIR PATH
 export PATH=/imaging/local/software/centos7/ants/bin/ants/bin/:$PATH
 export ANTSPATH=/imaging/local/software/centos7/ants/bin/ants/bin/
 FSLOUTPUTTYPE=NIFTI_GZ
+export PATH=/imaging/local/software/apptainer/1.3.5/bin/:$PATH
 
 dirp=/imaging/projects/cbu/wbic-p00567-7Tmultiecho/main
 work=/imaging/projects/cbu/wbic-p00567-7Tmultiecho/main/work
