@@ -14,7 +14,8 @@ cd $dirp
 mkdir -p $dirp/derivatives/tSNR/sub-"$ids"/
 
 # for each run
-for data in SESB SEMB SESBernst SEMBernst; do
+#for data in SESB SEMB SESBernst SEMBernst; do
+for data in SESB SEMB; do
 
 # calculate mean and standard deviation images (for inspection). Providing no input to 3dTstat calculates the mean
 3dTstat -overwrite -prefix $dirp/derivatives/tSNR/sub-"$ids"/"$data"_mean.nii.gz $dirp/derivatives/halaiprep/sub-"$ids"/func/sub-"$ids"_acq-"$data"_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz 
@@ -24,3 +25,13 @@ for data in SESB SEMB SESBernst SEMBernst; do
 
 done
 
+# for multi-echo data, calculate tSNR for tedana-reconstructed images only
+for data in MESB MEMB; do
+
+# calculate mean and standard deviation images (for inspection). Providing no input to 3dTstat calculates the mean
+3dTstat -overwrite -prefix $dirp/derivatives/tSNR/sub-"$ids"/"$data"_mean.nii.gz $dirp/derivatives/halaiprep/sub-"$ids"/func/sub-"$ids"_acq-"$data"_rec-tedana_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz 
+3dTstat -stdevNOD -overwrite -prefix $dirp/derivatives/tSNR/sub-"$ids"/"$data"_stdev.nii.gz $dirp/derivatives/halaiprep/sub-"$ids"/func/sub-"$ids"_acq-"$data"_rec-tedana_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz 
+# calculate tSNR
+3dTstat -tsnr -overwrite -prefix $dirp/derivatives/tSNR/sub-"$ids"/"$data"_tSNR.nii.gz $dirp/derivatives/halaiprep/sub-"$ids"/func/sub-"$ids"_acq-"$data"_rec-tedana_run-01_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz 
+
+done

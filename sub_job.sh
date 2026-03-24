@@ -9,8 +9,8 @@ fi
 #set FWHM smoothing (mm3)
 sm=6
 
-# for s in 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020; do
-for s in 021 022; do
+for s in 001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020; do
+#for s in 021 022; do
 
 echo "$s"
 
@@ -36,7 +36,7 @@ echo "$s"
 #sbatch -o $dirp/work/logs/"$s"_1stglmSL.out -c 16 --job-name=GLM"$s" --export=ids=${s} $dirp/scripts/sub_matlabjob.sh
 
 # runs 1st level GLMs for investigating the impact of the Ernst angle
-sbatch -o $dirp/work/logs/"$s"_1stglmernst.out -c 16 --job-name=GLM"$s" --export=ids=${s},sm=${sm} $dirp/scripts/sub_matlabjob.sh
+#sbatch -o $dirp/work/logs/"$s"_1stglmernst.out -c 16 --job-name=GLM"$s" --export=ids=${s},sm=${sm} $dirp/scripts/sub_matlabjob.sh
 
 ### runs transforms
 
@@ -45,7 +45,7 @@ sbatch -o $dirp/work/logs/"$s"_1stglmernst.out -c 16 --job-name=GLM"$s" --export
 
 ### calculates tSNR
 
-#sbatch -o $dirp/work/logs/"$s"tSNR.out -c 16 --job-name=7T_"$s" --export=ids=${s} $dirp/scripts/tSNR.sh
+sbatch -o $dirp/work/logs/"$s"tSNR.out -c 16 --job-name=7T_"$s" --export=ids=${s} $dirp/scripts/tSNR.sh
 
 done
 
